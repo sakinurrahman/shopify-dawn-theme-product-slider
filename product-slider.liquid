@@ -1,0 +1,381 @@
+ <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="product_grid section-{{ section.id }}-padding">
+ <div class="page-width">
+      <div class="collection__title title-wrapper title-wrapper--no-top-margin {% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
+        {%- if section.settings.title != blank -%}
+          <h2 class="title {{ section.settings.heading_size }}">{{ section.settings.title | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank or section.settings.show_description and section.settings.collection.description != empty -%}
+          <div class="collection__description {{ section.settings.description_style }}">{%- if section.settings.show_description -%}{{ section.settings.collection.description }}{%- else -%}{{ section.settings.description }}{% endif %}</div>
+        {%- endif -%}
+      </div>
+
+   <div class="slider_container loading">
+   <div class="product_grid_wrapper  slide_init_{{ section.id }}">
+     {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+      <div class="slider_item">
+           {% render 'card-product', card_product: product %}
+      </div>
+       {% endfor %}
+       
+    </div>
+   <div class="slide_prev_btn_{{ section.id }}" id="custom-prev">{% render 'arrow-left' %}</div>
+       <div class="slide_next_btn_{{ section.id }}" id="custom-next">{% render 'arrow-right' %}</div>
+   </div>
+ </div>
+</div>
+
+    <script> 
+  $(document).ready(function(){
+     $(".slider_container").removeClass("loading");
+    $('.slide_init_{{ section.id }}').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 1500,
+        arrows: true,
+        dots: false,
+        prevArrow: '.slide_prev_btn_{{ section.id }}',
+        nextArrow: '.slide_next_btn_{{ section.id }}',
+        pauseOnHover: false,
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+                slidesToShow: 2
+            }
+        }, {
+            breakpoint: 520,
+            settings: {
+                slidesToShow: 2
+            }
+        }]
+    });
+});
+</script>
+{% schema %}
+  {
+    "name": "Product Slider",
+    "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Featured collection",
+      "label": "t:sections.featured-collection.settings.title.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.featured-collection.settings.description.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.featured-collection.settings.show_description.label",
+      "default": false
+    },
+      {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 22,
+      "step": 1,
+      "default": 8,
+      "label": "Product Limit"
+    },
+       {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select a Collection"
+        },
+
+          {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.header.content"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.featured-collection.settings.image_ratio.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_vendor.label"
+    },
+          {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+    ],
+    "presets": [
+      {
+        "name": "Product Slider"
+      }
+    ]
+  }
+{% endschema %}
+
+
+<style>
+/* slick css */
+
+/* Slider */
+
+.slick-slide {
+	margin: 0 5px;
+}
+
+.slick-slider
+{
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+            user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -ms-touch-action: pan-y;
+        touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.slick-list
+{
+    position: relative;
+    display: block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+.slick-list:focus
+{
+    outline: none;
+}
+.slick-list.dragging
+{
+    cursor: pointer;
+    cursor: hand;
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list
+{
+    -webkit-transform: translate3d(0, 0, 0);
+       -moz-transform: translate3d(0, 0, 0);
+        -ms-transform: translate3d(0, 0, 0);
+         -o-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+}
+
+.slick-track
+{
+    position: relative;
+    top: 0;
+    left: 0;
+    display: block;
+}
+.slick-track:before,
+.slick-track:after
+{
+    display: table;
+    content: '';
+}
+.slick-track:after
+{
+    clear: both;
+}
+.slick-loading .slick-track
+{
+    visibility: hidden;
+}
+
+.slick-slide
+{
+    display: none;
+    float: left;
+    height: 100%;
+    min-height: 1px;
+}
+[dir='rtl'] .slick-slide
+{
+    float: right;
+}
+.slick-slide img
+{
+    display: block;
+}
+.slick-slide.slick-loading img
+{
+    display: none;
+}
+.slick-slide.dragging img
+{
+    pointer-events: none;
+}
+.slick-initialized .slick-slide
+{
+    display: block;
+}
+.slick-loading .slick-slide
+{
+    visibility: hidden;
+}
+.slick-vertical .slick-slide
+{
+    display: block;
+    height: auto;
+    border: 1px solid transparent;
+}
+.slick-arrow.slick-hidden {
+    display: none;
+}
+
+.slick-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.slider_container {
+  position: relative;
+}
+.product_grid .collection__title {
+	text-align: center;
+}
+#custom-next {
+	right: 0;
+	border: 1.5px solid black;
+	display: flex !important;
+	border-radius: 50%;
+	padding: 3px;
+  z-index:5;
+}
+#custom-prev {
+	left: 0;
+	border: 1.5px solid black;
+	display: flex !important;
+	border-radius: 50%;
+	padding: 3px;
+    z-index:5;
+}
+.slider_container.loading {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+.slider_container.loading::before {
+  display: block;
+  position: absolute;
+  content: "";
+  background: white;
+  opacity: 1;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.slider_container.loading::after {
+  display: block;
+  position: absolute;
+  content: "";
+  background: white;
+  opacity: 1;
+  border:5px solid black;
+  left:50%;
+  top:50%;
+  animation: spin 2s linear infinite;
+  transform: translate(-50%, -50%);
+  border-radius: 0%;
+  z-index: 14;
+  width: 30px;
+  height: 30px;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
